@@ -11,7 +11,7 @@ If we have some script we wish to run for a range of different parameters, by
     .csv` file and the run directories are named `run_0`, `run_1`, etc.
     
 The example in `test_create_multiple_runs.py` works as follows: The executable which
- is run is a bash script `run.sh`, which itself runs a seperate python script `sample
+ is to be run is a bash script `run.sh`, which itself runs a seperate python script `sample
  .py` which takes 3 integers i,j,k as input, and then concatenates them and outputs
   them to a file `output.txt`. If we only wanted to run this for the paramaters 1, 2
   , 3, then the command in `run.sh` would be:
