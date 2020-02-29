@@ -1,0 +1,31 @@
+"""
+
+Given a set of scripts which a user wishes to run, this script creates a workflow
+allowing the scripts to be run for a variety of different parameters. By replacing
+values in the user scripts with python string formatting, variable, this script will
+replace all values in the scripts with a range of parameters specified in a
+configuration file.
+
+The configuration file is a yaml file passed as the argument --config-file which
+defines an output directory, a set of files/scripts to copy and/or perform string
+substitution on, and a variable specification section, which specifies each variable
+name to substitute and the range of values to vary the values over.
+
+"""
+
+import argparse
+from parlize.parlize import create_runs
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--config-file",
+        required=True,
+    )
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    create_runs(**vars(args))

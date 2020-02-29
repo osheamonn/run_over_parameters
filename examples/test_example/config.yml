@@ -1,0 +1,13 @@
+# The explicit use of !!python/tuple is because although using lists is valid yaml, pyaml chokes since lists in python are not hashable. There is an open and unlikely to be merged PR for this on pyaml's github as of Feb 2020.
+OutputDirectory:
+  Output
+
+FilesToTemplateAndCopy:
+  # If two strings are specified instead of one, then the first will be the name of
+  # the existing file, and it will be renamed to the second in the run directory.
+  - [deriv_exp.py, renamed_sample.py]
+  - run.sh
+
+VariableParameters:
+
+  spacing: 'np.logspace'
