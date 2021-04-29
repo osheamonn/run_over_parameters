@@ -31,7 +31,7 @@ def apply_over_runs(dirname):
                 localdir = os.getcwd()
                 os.chdir(d)
                 return_value = function(*args, **kwargs)
-                return_values[int(d[-1])] = return_value
+                return_values[int(d.split('_')[-1])] = return_value
                 os.chdir(localdir)
             os.chdir(curdir)
             if all(val is None for val in return_values.values()):
