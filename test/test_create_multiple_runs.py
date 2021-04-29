@@ -1,5 +1,5 @@
 import filecmp
-
+from string import Template
 import os
 import pandas as pd
 import glob
@@ -17,7 +17,7 @@ def relative_to_absolute_path(d):
 def create_test_workflow():
     try:
         create_runs(relative_to_absolute_path(
-                                 'config.yml'))
+                                 'config.yml'), False)
         yield
     except Exception as e:
         raise e
@@ -55,9 +55,9 @@ def test_create_runs():
         for d in run_dirs:
             i = int(d[-1])
             current_parameters = parameters.iloc[i]
-            expected = open(relative_to_absolute_path('test_files/run.sh'),
-                            'r').read().format(
-                **current_parameters)
+            expected = Template(open(relative_to_absolute_path('test_files/run.sh'),
+                            'r').read()).substitute(
+                current_parameters)
             received = open(relative_to_absolute_path(os.path.join(d, 'run.sh')), 'r'
                             ).read()
             assert expected == received
@@ -71,8 +71,6 @@ def test_create_runs():
         for d in run_dirs:
             assert os.path.exists(relative_to_absolute_path(os.path.join(d,
                                                                          'output.txt')))
-
         results = check()
-
         for dirname, result in results.items():
             assert str(result) == "{i}{j}{k}".format(**parameters.iloc[dirname])
