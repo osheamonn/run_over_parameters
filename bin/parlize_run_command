@@ -1,0 +1,44 @@
+#! /usr/bin/env python
+
+import pandas as pd
+import argparse
+import subprocess
+import os
+import sys
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--command', help='Bash command to run in each run directory', required=True)
+    parser.add_argument('--filter', help='SQL style string to only run only in those directories for which parameters.csv satisfies the filter')
+    parser.add_argument('--dry-run', action='store_true')
+    parser.add_argument('--debug-single-run', type=int, nargs='?', const=0)
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    df = pd.read_csv("parameters.csv", index_col=0, sep='\t')
+
+    if args.filter:
+        df = df.query(args.filter)
+
+    if df.empty:
+        print("No valid parameters after filtering")
+        sys.exit()
+
+    root_dir = os.getcwd()
+    idxs = [df.index[args.debug_single_run]] if args.debug_single_run is not None else df.index
+
+    for idx in idxs:
+        if not args.dry_run:
+            try:
+                os.chdir(f'run_{idx}')
+                subprocess.call(args.command, shell=True)
+            except Exception as e:
+                raise e
+            finally:
+                os.chdir(root_dir)
+        else:
+            if not os.path.exists(f'run_{idx}'):
+                raise OSError("./run_{idx} does not exist")
+            print(f"Will run {args.command} in dir_{idx}")
