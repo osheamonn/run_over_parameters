@@ -1,0 +1,64 @@
+
+import sys
+import os
+
+
+sample_file = """
+# Example config.yml to be used with parlize_create_multiple_runs
+
+
+OutputDirectory:
+  ./
+
+
+FilesToTemplateAndCopy:
+  # Explicit list of files which will be copied into each run directory with any variables substitued. Only the basename of the file will be used, so directory structure is not preserved.
+  - TemplateFiles/file1.py
+  - TemplateFiles/file2.txt
+
+  # Example of renaming on copy.
+  - [TemplateFiles/oldname.cpp, newname.cpp]
+
+# Specification of names and values of parameters which will vary. Each `name` will substitute {name} in any of the template files above with its corresponding value.
+VariableParameters:
+  # Parameter names defined at this depth are common to all runs.
+  root_1:
+    - 10.
+    - 20.
+  root_2:
+    - 'foo'
+    - 'bar'
+
+  # If two or parameters should not be varied independently, then specify their names as a tuple, and each set of values as a list.
+  !!python/tuple [country, capital_city]:
+    - [Ireland, Dublin]
+    - [Chile, Santiago]
+
+
+  # One can add independent sets of parameters at the next depth. The names of these subsections don't matter but help with organising this file.
+
+  Batch1:
+    first_parameter_for_batch_1:
+      - 'a'
+      - 'b'
+    second_parameter_for_batch_1:
+      - 'c'
+      - 'd'
+
+  Batch2:
+    parameter_for_batch_2:
+      - 4
+      - 6
+
+# Bash commands that will be run in each run directory after creation. Can be useful for creating subdirectories, changing permissions, or running submission scripts.
+PostCreationCommands:
+  - "mkdir log"
+
+"""
+
+if __name__ == "__main__":
+   if os.path.exists('config.yml'):
+      print("config.yml already exists in current directory")
+      sys.exit()
+   with open('config.yml', 'w') as f:
+      f.write(sample_file)
