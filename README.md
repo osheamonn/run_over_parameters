@@ -23,9 +23,9 @@ The example in `test_create_multiple_runs.py` works as follows: The executable w
 which would produce an `output.txt` with the only line `123`. Now if we want to vary
  the i,j,k parameters, we simply replace 1,2,3 with named placeholders, 
  ```
-python sample.py --i {i} --j {j} --k {k}
+python sample.py --i $i --j $j --k $k
 ```
-and `create_multiple_runs` will use python string formatting to replace `i,j,k` with
+and `create_multiple_runs` will use python string templating to replace `i,j,k` with
  a range of values. To specify what values to use, `create_multiple_runs` takes a
   yaml config file as argument. The config file must specify 3 things:
    
@@ -88,15 +88,5 @@ VariableParameters:
   # Caveats
   - `parameters.csv` uses tabs as a separator instead of commas, so the sep must be
    given to read it in properly. e.g. `pd.read_csv('parameters.csv', sep='\t')`
-  - Since the library depends on python string formatting to substitute in the
-   template files, it will not work if one wishes to perform substitution inside of
-    other python files. This is because if those files do *any* string formatting
-     themselves, `create_multiple_runs` will try and format those strings and either
-      fail or do the wrong thing. As such any python files in the
-       `FilesToTemplateAndCopy` section of the config file are copied with no
-        substitution. 
-  - Any usage of `{`, `}` must be escaped by repeating them `{{`, `}}`, e.g. if a
-   bash script has bash variables. This is since the code will try and format these
-    strings and fail. 
   - There is a good chance I've made an error in terms of assuming file locations to
    be relative. If so this should be changed. 
