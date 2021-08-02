@@ -1,4 +1,4 @@
 pandas
-yaml
+pyaml
 pytest
 numpy

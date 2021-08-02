@@ -23,7 +23,7 @@ specifying the ranges in a yaml file, and then running the commands described be
 
 # Installation
 ```
-python setup.py --install
+python setup.py install
 ```
 
 # Usage

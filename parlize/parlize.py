@@ -22,8 +22,9 @@ class PartialFormatDict(dict):
     will return "1 {B}"
 
     """
+
     def __missing__(self, key):
-        return '{' + key + '}'
+        return "{" + key + "}"
 
 
 def parse_yaml_file(config_file):
@@ -35,11 +36,12 @@ def parse_yaml_file(config_file):
     # into an array followed by a flatten means both the tuple case and single string case get
     # mapped to a 1D array of strings
     def get_dfs(d):
-      return  [
-        pd.DataFrame(data=np.array(values), columns=np.array([names]).flatten())
-        for names, values in d.items()
-    ]
-    all_vars = yml_file['VariableParameters']
+        return [
+            pd.DataFrame(data=np.array(values), columns=np.array([names]).flatten())
+            for names, values in d.items()
+        ]
+
+    all_vars = yml_file["VariableParameters"]
     root = {k: v for k, v in all_vars.items() if type(v) != dict}
     subvars = {k: v for k, v in all_vars.items() if type(v) == dict}
 
@@ -49,7 +51,10 @@ def parse_yaml_file(config_file):
     from itertools import chain
 
     if subparameters:
-        all_parameters_dataframes = [merge_dataframes(*chain(root_parameters, subframes))  for subframes in subparameters]
+        all_parameters_dataframes = [
+            merge_dataframes(*chain(root_parameters, subframes))
+            for subframes in subparameters
+        ]
     else:
         all_parameters_dataframes = [merge_dataframes(*root_parameters)]
     all_parameters = pd.concat(all_parameters_dataframes, ignore_index=True)
@@ -76,9 +81,9 @@ def create_runs(config_file, force):
 
     # Must use itertuples instead of iterrows since iterrows will silently convert integers to floats.
     for tpl in df.itertuples():
-        s =  tpl._asdict()
+        s = tpl._asdict()
         idx = tpl.Index
-        s['Directory'] = idx
+        s["Directory"] = idx
         run_dir = os.path.join(output_dir, "run_{}".format(idx))
         os.makedirs(run_dir, exist_ok=True)
         for f in files_to_copy:
@@ -88,31 +93,42 @@ def create_runs(config_file, force):
             infile_contents, outfile = None, None
             if isinstance(f, str):
                 f_base = os.path.basename(f)
-                infile_contents = open(os.path.join(os.path.dirname(
-                    config_file), f), "r").read()
+                infile_contents = open(
+                    os.path.join(os.path.dirname(config_file), f), "r"
+                ).read()
                 outfile_name = os.path.join(run_dir, f_base)
                 if os.path.exists(outfile_name) and not force:
-                    raise RuntimeError(f"{outfile_name} exists. Pass --force to force overwrite")
+                    raise RuntimeError(
+                        f"{outfile_name} exists. Pass --force to force overwrite"
+                    )
                 outfile = open(outfile_name, "w")
             elif isinstance(f, list) and len(f) == 2:
-                infile_contents = open(os.path.join(os.path.dirname(config_file),
-                                                    f[0]),
-                                                                    "r").read()
+                infile_contents = open(
+                    os.path.join(os.path.dirname(config_file), f[0]), "r"
+                ).read()
                 outfile_name = os.path.join(run_dir, f[1])
                 if os.path.exists(outfile_name) and not force:
-                    raise RuntimeError(f"{outfile_name} exists. Pass --force to force overwrite")
+                    raise RuntimeError(
+                        f"{outfile_name} exists. Pass --force to force overwrite"
+                    )
                 outfile = open(outfile_name, "w")
             else:
-                raise RuntimeError("Files: {} should be either a single string or "
-                                   "list of size two representing input and output "
-                                   "files. ")
+                raise RuntimeError(
+                    "Files: {} should be either a single string or "
+                    "list of size two representing input and output "
+                    "files. "
+                )
             try:
                 outfile.write(
                     Template(infile_contents).safe_substitute(s)
-                #    infile_contents.format_map(PartialFormatDict(**s))
+                    #    infile_contents.format_map(PartialFormatDict(**s))
                 )
             except TypeError as e:
-                print("Exception raised. Most likely a variable specified in the .yml file for replacement does not exist in the file given. \n\n Replacement dict: \n {} \n\n File: \n {} \n".format(s, infile_contents))
+                print(
+                    "Exception raised. Most likely a variable specified in the .yml file for replacement does not exist in the file given. \n\n Replacement dict: \n {} \n\n File: \n {} \n".format(
+                        s, infile_contents
+                    )
+                )
                 raise
         os.chdir(run_dir)
         for command in post_creation_commands:

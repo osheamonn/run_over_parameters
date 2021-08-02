@@ -1,9 +1,8 @@
-
 import glob
 import os
-import subprocess
 import pandas as pd
 import functools
+
 
 def merge_dataframes(df, *rest):
     # type: (pd.DataFrame, Optional[pd.DataFrame]) -> pd.DataFrame
@@ -22,21 +21,24 @@ def apply_over_runs(dirname):
     to the return values. If the function does not return, neither does the decorated
     function.
     """
+
     def decorator(function):
         @functools.wraps(function)
         def wrapper(*args, **kwargs):
             curdir = os.getcwd()
             return_values = {}
-            for d in glob.glob(os.path.join(dirname, 'run_*')):
+            for d in glob.glob(os.path.join(dirname, "run_*")):
                 localdir = os.getcwd()
                 os.chdir(d)
                 return_value = function(*args, **kwargs)
-                return_values[int(d.split('_')[-1])] = return_value
+                return_values[int(d.split("_")[-1])] = return_value
                 os.chdir(localdir)
             os.chdir(curdir)
             if all(val is None for val in return_values.values()):
                 return
             else:
                 return return_values
+
         return wrapper
+
     return decorator
