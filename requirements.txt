@@ -1,3 +1,4 @@
 pandas
 yaml
 pytest
+numpy
